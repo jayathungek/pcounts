@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="counter"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/kavi/Desktop/misc/MEngProject/libs/opencsv-4.2.jar"/>
+	<classpathentry kind="lib" path="/home/kavi/Desktop/misc/MEngProject/libs/jargs-1.0.jar"/>
+	<classpathentry kind="lib" path="/home/kavi/Desktop/misc/MEngProject/libs/imglib2-5.3.0.jar"/>
+	<classpathentry kind="lib" path="/home/kavi/Desktop/misc/MEngProject/libs/ij-1.52e.jar"/>
+	<classpathentry kind="lib" path="/home/kavi/Desktop/misc/MEngProject/libs/commons-lang3-3.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,1 +1,9 @@
 /bin/
+*.png
+!readme_*.png
+*.jpeg
+*.jpg
+*.class
+*.csv
+*.JPG
+*.mp4
