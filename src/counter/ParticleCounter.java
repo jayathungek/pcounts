@@ -216,6 +216,8 @@ public class ParticleCounter
 		if (remainingArgs.length == 0)throw new IOException("Argument must contain a file path!");
 		
 		String path = remainingArgs[0];
+		int lastIndex = path.length() - 1;
+		if ( path.charAt(lastIndex)== '\\' || path.charAt(lastIndex)== '/') path = path.substring(0, path.length());
 		ParticleCounter pc = new ParticleCounter(path, operatingSystem);    
 		pc.setUnit(MEASUREMENT_UNITS[0]);
 		pc.setScale(1.0);
