@@ -16,7 +16,7 @@ To install updates when they become available, type
 
 ### Usage
 
-```haskell
+```bash 
 pcounts [options] {directory|image}
   options:
     -s, --minsize requires integer - minimum particle size (pixels)
@@ -74,19 +74,19 @@ It is very important to note that:
 
 To count the particles on an image called ``wafer.jpeg`` , but only if they are bigger than 600px<sup>2</sup> in area: 
 
-```c
+```bash
 pcounts wafer.jpg --minsize=600
 ```
 
 To count the particles on an image called ``wafer.jpeg`` , but only if they are perfect circles and smaller than 50nm<sup>2</sup> in area, and assuming  there are 0.45 nanometres to a pixel: 
 
-```c
+```bash
 pcounts wafer.jpg --maxsize=50 --nm=0.45 --mincircularity=1.0
 ```
 
 To process all the images in a directory called ``allimages``, and grade the particles according to a user specified CSV file ``mylabels.csv``: 
 
-```c
+```bash
 pcounts allimages --userdefined="mylabels.csv"
 ```
 
