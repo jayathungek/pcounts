@@ -54,7 +54,7 @@ Optional arguments can be passed into the program by using the defined flags. By
 
 By using the ```--userdefined``` flag and providing a suitably formatted .csv file, the user can specify a custom list of meaningful sizes and labels instead of using the default small, medium, large labels. A properly formatted csv file looks like this:
 
-![enter image description here](readme_formattedCSV.png)
+![enter image description here](https://raw.githubusercontent.com/jayathungek/pcounts/8bbacc18/deploy/readme_formattedCSV.png)
 
 The first column ( A ) contains particle areas that correspond to the labels in the next two columns. The last item in this column tells the program the units of the areas, as well as the scaling factor - the number of nanometres to a pixel. In this case, there are 0.5 nanometres to a pixel, and therefore the areas in column A are in nanometres. Small particles are ones that have an area between 0-50nm, medium particles are ones that have an area between 50-100nm and so on. 
 
