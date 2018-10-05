@@ -1,0 +1,26 @@
+{
+  "bin": {
+    "pcounts": "jdeploy-bundle/jdeploy.js"
+  },
+  "author": "jayathungek",
+  "description": "A program that counts particles on images.",
+  "main": "index.js",
+  "preferGlobal": true,
+  "repository": "",
+  "version": "0.3.7",
+  "jdeploy": {
+    "jar": "particle-counter.jar"
+  },
+  "dependencies": {
+    "shelljs": "^0.7.5"
+  },
+  "license": "ISC",
+  "name": "pcounts",
+  "files": [
+    "jdeploy-bundle",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
