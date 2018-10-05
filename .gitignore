@@ -1,6 +1,6 @@
 /bin/
-*.classpath
-*.project
+.classpath
+.project
 *.png
 !readme_*.png
 *.jpeg
