@@ -46,7 +46,7 @@ public class CSV {
 		ArrayList<String> l = new ArrayList<String>();
 		while ((nextLine = reader.readNext()) != null) {
 			try {
-				l.add((nextLine[1]));				
+				if (!(nextLine[1]).isEmpty()) l.add((nextLine[1]));
 			}catch(ArrayIndexOutOfBoundsException e) {}
 			
 		}
@@ -57,7 +57,7 @@ public class CSV {
 		ArrayList<String> v = new ArrayList<String>();
 		while ((nextLine = reader.readNext()) != null) {
 			try {
-				v.add((nextLine[2]));				
+				if (!(nextLine[2]).isEmpty()) v.add((nextLine[2]));
 			}catch(ArrayIndexOutOfBoundsException e) {}
 		}
 		String[] verbose_labels = v.toArray(new String[v.size()]);
