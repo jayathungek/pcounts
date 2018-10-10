@@ -45,9 +45,9 @@ public class ParticleCounter
     public < T extends NumericType< T > & NativeType< T > > ParticleCounter( String directory, String operatingSystem)
     {
     	if (operatingSystem.contains("Windows")){
-    		separator = "\\";
+    		this.separator = "\\";
     	}else {
-    		separator = "/";
+    		this.separator = "/";
     	}
         File file = new File(directory);
         this.labels = new LabelTable();
@@ -217,7 +217,9 @@ public class ParticleCounter
 		
 		String path = remainingArgs[0];
 		int lastIndex = path.length() - 1;
-		if ( path.charAt(lastIndex)== '\\' || path.charAt(lastIndex)== '/') path = path.substring(0, path.length());
+		if ( path.charAt(lastIndex)== '\\' || path.charAt(lastIndex)== '/') {
+			path = path.substring(0, lastIndex); 
+		} 
 		ParticleCounter pc = new ParticleCounter(path, operatingSystem);    
 		pc.setUnit(MEASUREMENT_UNITS[0]);
 		pc.setScale(1.0);
