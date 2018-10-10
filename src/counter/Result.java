@@ -100,7 +100,7 @@ public class Result{
 			if (index > 0 && index != lastLabelIndex) {
 				int prev_index = index - 1;
 				subheaders.add(String.format("%s (%d - %d sq %s): %d", this.labels.getVerboseLabels()[index],
-					       this.labels.getGrades()[prev_index], this.labels.getGrades()[index], this.unit, count));
+					       this.labels.getGrades()[prev_index]+1, this.labels.getGrades()[index], this.unit, count));
 			}else if (index > 0 && index == lastLabelIndex){
 				int prev_index = index - 1;
 				subheaders.add(String.format("%s (>%d sq %s): %d", this.labels.getVerboseLabels()[index],
