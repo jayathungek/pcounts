@@ -62,7 +62,7 @@ public class ParticleCounter
             this.files = new ArrayList<>();
             this.results = new ArrayList<>();
             this.basePath = directory;
-            this.resultsPath = this.basePath + "counts" + this.separator;
+            this.resultsPath = this.basePath  + this.separator + "counts" + this.separator;
         }
         
     }
@@ -113,7 +113,7 @@ public class ParticleCounter
     }
 
     public void saveAllResultsToCSV(){
-        File saveDir = new File(resultsPath);
+        File saveDir = new File(this.resultsPath); 
         if (!saveDir.exists()) new File (resultsPath).mkdir();
         for(Result result : this.results){
             saveResultsToCSV(result);
