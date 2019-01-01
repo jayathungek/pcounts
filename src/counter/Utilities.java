@@ -1,8 +1,13 @@
 package counter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
@@ -10,7 +15,7 @@ import ij.measure.ResultsTable;
 
 public class Utilities{
 	private static final int BRIGHTNESS_CUTOFF = 75;  //brightfield or darkfield
-    private static final double ADJUSTMENT = 1.0; // adjust the standard deviation scaling
+    private static final double ADJUSTMENT = 2; // adjust the standard deviation scaling
 
 	public static int getMaxIndex(long[] histogram){
 	    if (histogram.length == 0) return -1;
@@ -61,16 +66,18 @@ public class Utilities{
         int meanInt = (int) Math.ceil(mean);
         double std = stat.stdDev;
         int[] bounds = {0, 0};
+        int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
+        bounds[1] = upperBound;
 
         // System.out.printf("Mean:%.2f, StdDev:%.2f\n", mean, std);
-        if (meanInt >= BRIGHTNESS_CUTOFF){ // brightfield
-            int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
-            bounds[1] = upperBound;
-        }else{                           // darkfield
-            int lowerBound = (int) (Math.ceil(mean + ADJUSTMENT*std));
-            bounds[0] = lowerBound;
-            bounds[1] = 255;
-        }
+//        if (meanInt >= BRIGHTNESS_CUTOFF){ // brightfield
+//            int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
+//            bounds[1] = upperBound;
+//        }else{                           // darkfield
+//            int lowerBound = (int) (Math.ceil(mean + ADJUSTMENT*std));
+//            bounds[0] = lowerBound;
+//            bounds[1] = 255;
+//        }
                 
         return bounds;
     }
@@ -109,5 +116,42 @@ public class Utilities{
     public static Double rescaleArea(Double area, Double scale) {
     	return Math.pow(scale,2)*area;
     }
+    
+    public static File[] searchMatchingFiles(String name, File dir) {
+		return dir.listFiles(new FilenameFilter()
+		{
+			  public boolean accept(File dir, String filename)
+			  {
+				  return filename.startsWith(name);
+			  }
+			});
+	}
+    public static void saveRecordsToCSV(ArrayList<ImageRecord> irList, String filename) throws FileNotFoundException {
+    	 PrintWriter pw = new PrintWriter(new File(filename));
+         StringBuilder sb = new StringBuilder();
+         sb.append("sample,countBefore,countAfter,areaBefore,areaAfter");
+         HashMap<String, Integer> grades = irList.get(0).getAvgBefore().getGrades();
+         ArrayList<String> keys = new ArrayList<String>();
+         for (String label : grades.keySet()) {
+        	 sb.append(","+label+"_before");
+        	 sb.append(","+label+"_after");
+        	 keys.add(label);
+         }
+         sb.append('\n');
+         for(ImageRecord ir : irList) {
+        	 sb.append(String.format("%s,%d,%d,%.5f,%.5f", ir.getName(), ir.getAvgBefore().getTotalCount(), ir.getAvgAfter().getTotalCount()
+        			 , ir.getAvgAreaCoveredBefore(), ir.getAvgAreaCoveredAfter()));
+        	 for (String label : keys) {
+            	 sb.append(String.format(",%.2f,%.2f", ir.getCountForGradeBefore(label), ir.getCountForGradeAfter(label)));
+             }
+        	 sb.append('\n');
+         }
+         pw.write(sb.toString());
+         pw.close();
+    }
+    
+    
+    
+    
 
 }

@@ -10,6 +10,7 @@ import ij.measure.ResultsTable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Vector;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import jargs.gnu.CmdLineParser;
@@ -24,14 +25,14 @@ public class ParticleCounter
 	private static final String[] MEASUREMENT_UNITS = { "px", "nm", "um"};
     private static final int MEASUREMENTS =  Measurements.AREA + Measurements.CENTROID;
     private static final int OPTIONS = ParticleAnalyzer.SHOW_NONE;
-	private static final char[] CHAR_OPTIONS = {'s', 'S', 'c', 'C', 'u', 'n', 'm'};
+	private static final char[] CHAR_OPTIONS = {'s', 'S', 'c', 'C', 'u', 'n', 'm', 'd'};
 	private static final String[] STRING_OPTIONS = {"minsize", "maxsize", "mincircularity", 
-			                                       "maxcircularity", "userdefined", "nm", "um"};
+			                                       "maxcircularity", "userdefined", "nm", "um", "diff"};
     
-	private double MIN_PARTICLE_SIZE = 0;
-    private double MAX_PARTICLE_SIZE = 99999; //maximum is 99999
-    private double MIN_CIRCULARITY = 0.4;
-    private double MAX_CIRCULARITY = 1.0;
+	private static double MIN_PARTICLE_SIZE = 0;
+    private static double MAX_PARTICLE_SIZE = 99999; //maximum is 99999
+    private static double MIN_CIRCULARITY = 0.4;
+    private static double MAX_CIRCULARITY = 1.0;
     private String basePath;
     private String resultsPath;
     private File file;
@@ -68,7 +69,7 @@ public class ParticleCounter
     }
 
     // The results table holds all measurements associated with a certain image
-    public ResultsTable analyzeImage(ImagePlus image, String filename){
+    public static ResultsTable analyzeImage(ImagePlus image, String filename){
         ResultsTable rt = new ResultsTable();
         rt.setDefaultHeadings();
         ParticleAnalyzer pa = new ParticleAnalyzer(OPTIONS, MEASUREMENTS, rt, MIN_PARTICLE_SIZE,
@@ -88,6 +89,74 @@ public class ParticleCounter
         int[] bounds = Utilities.getThresholdBounds(imp);
         imp.getProcessor().setThreshold(bounds[0], bounds[1], ImageProcessor.BLACK_AND_WHITE_LUT);
         return imp;
+    }
+    
+    public static ArrayList<ImageRecord> generateImageRecords(ArrayList<ImageRecord> irList, LabelTable lt, String unit, Double scale ){
+//    	ProgressBar pb = new ProgressBar(irList.size());
+//    	pb.start();
+    	for(ImageRecord ir : irList) {
+    		ir = analyseImageRecord(ir, lt, unit, scale);
+//    		pb.tick();
+    	}
+    	return irList;
+    }
+    
+    public static ImageRecord analyseImageRecord(ImageRecord ir, LabelTable lt, String unit, Double scale) {
+    	
+    	File[] before = ir.getBefore();
+    	File[] after = ir.getAfter();
+    	int numBefore = before.length;
+    	int numAfter  = after.length;
+    	
+    	Double avgAreaCoveredBefore = 0.0;
+    	Count avgCountBefore = new Count(lt); // average counts set to 0
+    	for (File image : before) {
+    		ImagePlus imp = processInputImage(image);
+    		ResultsTable rt = analyzeImage(imp, image.getName());
+    		Result r = new Result(image.getName(), rt, imp, lt, unit, scale);
+    		Count c = new Count(r);
+    		
+    		avgCountBefore.setTotalCount(avgCountBefore.getTotalCount()+c.getTotalCount());    		
+    		avgCountBefore.addToGrade(c.getGrades());
+    		avgAreaCoveredBefore+= r.getAreaCovered();
+    	}
+    	avgCountBefore.averageCounts(numBefore);
+    	avgAreaCoveredBefore /= numBefore;
+    	
+    	Double avgAreaCoveredAfter = 0.0;
+    	Count avgCountAfter = new Count(lt); // average counts set to 0
+    	for (File image : after) {
+    		ImagePlus imp = processInputImage(image);
+    		ResultsTable rt = analyzeImage(imp, image.getName());
+    		Result r = new Result(image.getName(), rt, imp, lt, unit, scale);
+    		Count c = new Count(r);
+    		avgCountAfter.setTotalCount(avgCountAfter.getTotalCount()+c.getTotalCount());    		
+    		avgCountAfter.addToGrade(c.getGrades());
+    		avgAreaCoveredAfter += r.getAreaCovered();
+    	}
+    	avgCountAfter.averageCounts(numAfter);
+    	avgAreaCoveredAfter /= numAfter;
+    	
+    	ir.setAvgBefore(avgCountBefore);
+    	ir.setAvgAfter(avgCountAfter);
+    	
+    	Double normCountChange = (double)(avgCountAfter.getTotalCount() - avgCountBefore.getTotalCount())/avgCountBefore.getTotalCount();
+    	Double normAreaChange = (avgAreaCoveredAfter - avgAreaCoveredBefore)/avgAreaCoveredBefore;
+    	
+    	ir.setAvgCountBefore(avgCountBefore.getTotalCount());
+    	ir.setAvgAreaCoveredBefore(avgAreaCoveredBefore);
+    	ir.setAvgBefore(avgCountBefore);
+    	
+    	ir.setAvgCountAfter(avgCountAfter.getTotalCount());
+    	ir.setAvgAreaCoveredAfter(avgAreaCoveredAfter);
+    	ir.setAvgAfter(avgCountAfter);
+    	
+    	ir.setNormCountChange(normCountChange);
+    	ir.setNormAreaChange(normAreaChange);
+    	
+    	
+    	return ir;
+    	
     }
 
 
@@ -164,19 +233,19 @@ public class ParticleCounter
     }
     
     public void setMinParticleSize(double size) {
-    	this.MIN_PARTICLE_SIZE = Utilities.rescaleArea(size, this.scale);
+    	MIN_PARTICLE_SIZE = Utilities.rescaleArea(size, this.scale);
     }
     
     public void setMaxParticleSize(double size) {
-    	this.MAX_PARTICLE_SIZE = Utilities.rescaleArea(size, this.scale);
+    	MAX_PARTICLE_SIZE = Utilities.rescaleArea(size, this.scale);
     }
     
     public void setMinCircularity(double circ) {
-    	this.MIN_CIRCULARITY= circ;
+    	MIN_CIRCULARITY= circ;
     }
     
     public void setMaxCircularity(double circ) {
-    	this.MAX_CIRCULARITY= circ;
+    	MAX_CIRCULARITY= circ;
     }
     
     public void setTable(LabelTable lt) {
@@ -202,6 +271,7 @@ public class ParticleCounter
     	final Option.StringOption userDefOption = new Option.StringOption(CHAR_OPTIONS[4], STRING_OPTIONS[4]);
     	final Option.DoubleOption nanoScaleOption = new Option.DoubleOption(CHAR_OPTIONS[5], STRING_OPTIONS[5]);
     	final Option.DoubleOption microScaleOption = new Option.DoubleOption(CHAR_OPTIONS[6], STRING_OPTIONS[6]);
+    	final Option.StringOption diffOption = new Option.StringOption(CHAR_OPTIONS[7], STRING_OPTIONS[7]);
     	parser.addOption(minSizeOption);
     	parser.addOption(maxSizeOption);
     	parser.addOption(minCircOption);
@@ -209,6 +279,7 @@ public class ParticleCounter
     	parser.addOption(userDefOption);
     	parser.addOption(nanoScaleOption);
     	parser.addOption(microScaleOption);
+    	parser.addOption(diffOption);
     	parser.parse(args);
     	
     	String operatingSystem = System.getProperty("os.name");    	
@@ -267,12 +338,33 @@ public class ParticleCounter
     		pc.setUnit(MEASUREMENT_UNITS[2]);
     		pc.setScale(microScale);
     	}catch (NullPointerException e) {}
+        
+        try {	     
+    		Vector<String> v = parser.getOptionValues(diffOption); 
+    		String beforeDir = v.get(0);
+    		String afterDir = v.get(1); 
+    		ImageComparator ic = new ImageComparator(beforeDir, afterDir); 
+            ArrayList<ImageRecord> irList = ic.getImageRecords();
+            irList = generateImageRecords(irList, pc.labels, pc.unit, pc.scale);
+            for (ImageRecord ir : irList) {
+            	ir.prettyPrint();
+            }
+            Utilities.saveRecordsToCSV(irList, "boxC.csv");
+    	}catch (ArrayIndexOutOfBoundsException e) {
+//    		System.out.println("nope");
+    	}
 
-        pc.start();
+//        pc.start();
+        
+        ImagePlus imp = new Opener().openImage( pc.file.getAbsolutePath() );
+        int[] bounds = Utilities.getThresholdBounds(imp);
+        System.out.println(pc.file.getName()+" bounds: " + bounds[0]+", "+bounds[1]);
         
     }
 }
 
+///home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_clean/A/A3NE_mid.jpg
+//img/postcontam -d /home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_contamination/A/ -d /home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_clean/A/
 
 
 

@@ -6,6 +6,7 @@
 *.jpeg
 *.jpg
 *.class
+!High_pass.class
 *.csv
 *.JPG
 *.mp4

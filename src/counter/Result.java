@@ -75,17 +75,25 @@ public class Result{
 	public ResultsTable getResultsTable(){
 		return this.rt;
 	}
+	
+	public Double getAreaCovered() {
+		return this.contaminated_area;
+	}
 
 	public String getName(){
 		return this.name;
+	}
+	
+	public LabelTable getLabelTable() {
+		return this.labels;
 	}
 
 	public int getParticleCount(){
 		return this.particle_count;
 	}
-
-	public int getParticleCount(String label){
-		return (this.particles.get(label)).size();
+	
+	public int getCountForLabel(String label) {
+		return this.particles.get(label).size();
 	}
 
 	public void prettyPrint(){
@@ -96,7 +104,7 @@ public class Result{
 		int index = 0;
 		int lastLabelIndex = this.labels.getLabels().length - 1;
 		for (String label : this.labels.getLabels()){
-			int count = getParticleCount(label);
+			int count = getCountForLabel(label);
 			if (index > 0 && index != lastLabelIndex) {
 				int prev_index = index - 1;
 				subheaders.add(String.format("%s (%d - %d sq %s): %d", this.labels.getVerboseLabels()[index],
