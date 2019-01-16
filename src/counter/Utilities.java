@@ -68,16 +68,7 @@ public class Utilities{
         int[] bounds = {0, 0};
         int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
         if(upperBound < 0) upperBound = 0;
-        bounds[1] = upperBound;
-//        if (meanInt >= BRIGHTNESS_CUTOFF){ // brightfield
-//            int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
-//            bounds[1] = upperBound;
-//        }else{                           // darkfield
-//            int lowerBound = (int) (Math.ceil(mean + ADJUSTMENT*std));
-//            bounds[0] = lowerBound;
-//            bounds[1] = 255;
-//        }
-                
+        bounds[1] = upperBound;                
         return bounds;
     }
 
