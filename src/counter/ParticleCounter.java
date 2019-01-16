@@ -351,52 +351,9 @@ public class ParticleCounter
             }
             Utilities.saveRecordsToCSV(irList, "boxC.csv");
     	}catch (ArrayIndexOutOfBoundsException e) {
-//    		System.out.println("nope");
     	}
 
-//        pc.start();
-        
-        ImagePlus imp = new Opener().openImage( pc.file.getAbsolutePath() );
-        int[] bounds = Utilities.getThresholdBounds(imp);
-        System.out.println(pc.file.getName()+" bounds: " + bounds[0]+", "+bounds[1]);
+        pc.start();
         
     }
 }
-
-///home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_clean/A/A3NE_mid.jpg
-//img/postcontam -d /home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_contamination/A/ -d /home/kavi/Desktop/Uni/Y5/MEngProject/images/experiment_space/after_clean/A/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // public static int[] getThresholdBounds(ImagePlus imP){
-    //     ImageStatistics stat = ImageStatistics.getStatistics(imP.getProcessor());
-    //     long[] histogram = stat.getHistogram();
-    //     int maxIndexGradient = 0;
-    //     //Check whether brightfield or darkfield
-    //     int maxIndex = Utilities.getMaxIndex(histogram);
-    //     int[] bounds = {0, 0};
-    //     if (maxIndex >= BRIGHTNESS_CUTOFF){ // brightfield
-    //         maxIndexGradient = Utilities.getIndexOfSteepestGradient(histogram, 1, true) - ADJUSTMENT;
-    //         bounds[1] = maxIndexGradient;
-    //     }else{                           // darkfield
-    //         maxIndexGradient = Utilities.getIndexOfSteepestGradient(histogram, 1, false) + ADJUSTMENT;
-    //         bounds[0] = maxIndexGradient;
-    //         bounds[1] = 255;
-    //     }
-        
-        
-    //     return bounds;
-    // }

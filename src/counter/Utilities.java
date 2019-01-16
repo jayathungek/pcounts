@@ -67,9 +67,8 @@ public class Utilities{
         double std = stat.stdDev;
         int[] bounds = {0, 0};
         int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
+        if(upperBound < 0) upperBound = 0;
         bounds[1] = upperBound;
-
-        // System.out.printf("Mean:%.2f, StdDev:%.2f\n", mean, std);
 //        if (meanInt >= BRIGHTNESS_CUTOFF){ // brightfield
 //            int upperBound = (int) (Math.ceil(mean - ADJUSTMENT*std));
 //            bounds[1] = upperBound;
